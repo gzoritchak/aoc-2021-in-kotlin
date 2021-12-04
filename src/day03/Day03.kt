@@ -10,7 +10,7 @@ fun main() {
     println(part2(input))
 }
 
-fun part1(input: List<String>): Int {
+private fun part1(input: List<String>): Int {
     val size = input.size
     val colSize = input[0].length
     val gamma = mutableListOf<Char>()
@@ -23,7 +23,7 @@ fun part1(input: List<String>): Int {
     return gamma.joinToString(separator = "").toInt(2) * epsilon.joinToString(separator = "").toInt(2)
 }
 
-fun part2(input: List<String>): Int {
+private fun part2(input: List<String>): Int {
     val oxygen = input.filterInputs(0) {ones, zeros -> if (zeros.size > ones.size) zeros else ones}.first().toInt(2)
     val scrubber = input.filterInputs(0){ones, zeros -> if (zeros.size > ones.size) ones else zeros}.first().toInt(2)
     return scrubber * oxygen
