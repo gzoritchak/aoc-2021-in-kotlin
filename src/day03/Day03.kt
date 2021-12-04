@@ -2,16 +2,11 @@ package day03
 
 import readInput
 
+
+val input = readInput("day03/Day03")
+
 fun main() {
-    println("Hello day 3")
-
-    val testInput = readInput("day03/Day03Test")
-    val input = readInput("day03/Day03")
-
-    check(part1(testInput) == 198)
     println(part1(input))
-
-    println(part2(testInput))
     println(part2(input))
 }
 
@@ -29,10 +24,8 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    val oxygen = input.filterInputs(0) {ones, zeros -> if (zeros.size > ones.size) zeros else ones}
-        .first().toInt(2)
-    val scrubber = input.filterInputs(0){ones, zeros -> if (zeros.size > ones.size) ones else zeros}
-        .first().toInt(2)
+    val oxygen = input.filterInputs(0) {ones, zeros -> if (zeros.size > ones.size) zeros else ones}.first().toInt(2)
+    val scrubber = input.filterInputs(0){ones, zeros -> if (zeros.size > ones.size) ones else zeros}.first().toInt(2)
     return scrubber * oxygen
 }
 
@@ -43,4 +36,3 @@ private fun List<String>.filterInputs(pos: Int = 0, filterBlock: (List<String>, 
     val keep = filterBlock(ones,zeros)
     return keep.filterInputs(pos+1, filterBlock)
 }
-
