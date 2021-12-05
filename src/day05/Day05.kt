@@ -3,16 +3,21 @@ package day05
 import readInput
 import java.lang.Integer.max
 import java.lang.Integer.min
+import kotlin.math.absoluteValue
 
 fun main() {
-    println(part1(readInput("day05/Day05").toWinds()))
-//    println(part2(readInput("day04/Day04").toGame()))
+    println(count(readInput("day05/Day05")
+        .toWinds()
+        .filter { it.isVertical() || it.isHorizontal() }
+    ))
+    println(count(readInput("day05/Day05")
+        .toWinds()
+    ))
 }
 
-fun part1(winds: List<Wind>): Int {
-    val horizontalOrVerticalWinds = winds.filter { it.isVertical() || it.isHorizontal() }
+fun count(winds: List<Wind>): Int {
     val count = mutableMapOf<Point, Int>()
-    horizontalOrVerticalWinds
+    winds
         .flatMap { it.toPoints() }
         .forEach {
             val previous = count.getOrDefault(it, 0)
@@ -26,11 +31,26 @@ data class Point(val x: Int, val y: Int)
 data class Wind(val from: Point, val to: Point) {
     fun isVertical()    = from.x == to.x
     fun isHorizontal()  = from.y == to.y
+
     fun toPoints(): List<Point> = when {
         isHorizontal()  -> { (min(from.x, to.x)..max(from.x, to.x)).map { Point(it, from.y) } }
         isVertical()    -> { (min(from.y, to.y)..max(from.y, to.y)).map { Point(from.x, it) } }
-        else            -> listOf()
+        else            -> {
+            val dx = direction(from.x, to.x)
+            val dy = direction(from.y, to.y)
+            (0..(from.x - to.x).absoluteValue).map {
+                Point(from.x + it*dx, from.y + it*dy)
+            }
+        }
     }
+
+    private fun direction(from: Int, to: Int): Int =
+        when {
+            from > to -> -1
+            from < to -> 1
+            else -> 0
+        }
+
 }
 
 const val delimiter = "->"
