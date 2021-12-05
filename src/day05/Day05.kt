@@ -1,8 +1,6 @@
 package day05
 
 import readInput
-import java.lang.Integer.max
-import java.lang.Integer.min
 import kotlin.math.absoluteValue
 
 val winds: List<Wind> = readInput("day05/Day05").map { line ->
