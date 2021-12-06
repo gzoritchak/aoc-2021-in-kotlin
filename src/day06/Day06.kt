@@ -2,25 +2,37 @@ package day06
 
 import readInput
 
-val fish = readInput("day06/Day06Test").first().split(",").map { it.toInt() }
+val fish = readInput("day06/Day06").first().split(",").map { it.toInt() }
 
 fun main() {
-    var fishState = fish
-    (1..18).forEach {
-        fishState = nextDay(fishState)
+    val fishState = FishState(fish)
+    (1..256).forEach {
+        fishState.nextDay()
+        if (it == 80)
+            println(fishState.total())
     }
-    println(fishState.size)
+    println(fishState.total())
 }
 
-fun nextDay(fishState: List<Int>): List<Int> {
-    val newFish = mutableListOf<Int>()
-    return fishState.map {
-        if (it > 0)
-            it -1
-        else {
-            newFish.add(8)
-            6
+class FishState(fish: List<Int>) {
+
+    val fishPerDay = LongArray(9){0L}
+
+    init {
+        (0..8).forEach { idx ->
+            fishPerDay[idx] = fish.count { it == idx }.toLong()
         }
-    } + newFish
+    }
+
+    fun nextDay() {
+        val zeroDayFish = fishPerDay[0]
+        (0..7).forEach {
+            fishPerDay[it] = fishPerDay[it + 1] + if (it == 6) zeroDayFish else 0
+        }
+        fishPerDay[8] = zeroDayFish
+    }
+
+    fun total(): Long = fishPerDay.sum()
+
 }
 
