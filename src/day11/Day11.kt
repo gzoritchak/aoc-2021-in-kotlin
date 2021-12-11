@@ -8,12 +8,18 @@ fun main() {
     val game = Game(input)
     println(game)
 
-    repeat(100){
-        game.nextStep()
+    var step = 0
+    while (true) {
+        val stepFlash = game.nextStep()
         println()
         println(game)
+        if(step++ == 100)
+            println(game.totalFlash)
+        if (stepFlash == 100){
+            println(step)
+            return
+        }
     }
-    println(game.totalFlash)
 }
 
 
