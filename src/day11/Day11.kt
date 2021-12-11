@@ -7,27 +7,78 @@ private val input = readInput("day11/Day11")
 fun main() {
     val game = Game(input)
     println(game)
-    println()
-    game.raiseEnergy()
-    println(game)
+
+    repeat(100){
+        game.nextStep()
+        println()
+        println(game)
+    }
+    println(game.totalFlash)
 }
+
 
 class Game(input: List<String>) {
 
-    private val values: Array<Array<Int>> = Array(10) { y ->
-        Array(10) { x -> input[y][x].toString().toInt()}
-    }
+    var totalFlash = 0
 
-    override fun toString(): String = values.joinToString ("\n") { line ->
-        line.joinToString (" ") { it.toString()  }
-    }
+    val points = mutableMapOf<Point, Int>()
 
-    fun raiseEnergy() {
-        for (y in 0..9){
-            for (x in 0..9){
-                values[y][x] = values[y][x] + 1
+    init {
+        for (y in 0..9) {
+            for (x in 0..9) {
+                val value = input[y][x].toString().toInt()
+                points[Point(x, y)] = value
             }
         }
+    }
+
+    data class Point(val x: Int, val y: Int) {
+        fun adjacents(): List<Point> {
+            val dx = (x - 1).coerceAtLeast(0)..(x + 1).coerceAtMost(9)
+            val dy = (y - 1).coerceAtLeast(0)..(y + 1).coerceAtMost(9)
+            val points = hashSetOf<Point>()
+            for (newX in dx)
+                for (newY in dy)
+                    points.add(Point(newX, newY))
+            return (points - this).toList()
+        }
+    }
+
+    var Point.energy: Int
+        get() = points[Point(x, y)]!!
+        set(value) {
+            points[Point(x, y)] = value
+        }
+
+    override fun toString(): String =
+        (0..9).joinToString("\n") { y ->
+            (0..9).joinToString(" ") { x ->
+                points[Point(x, y)].toString()
+            }
+        }
+
+    fun nextStep(): Int {
+        points.keys.forEach { it.raiseEnergy() }
+        var flash = collectFlash()
+        var newFlash = flash
+        while (newFlash.isNotEmpty()) {
+            val adjacents = newFlash
+                .fold(mutableListOf<Point>()) { acc, point -> acc.addAll(point.adjacents()); acc }
+            adjacents.forEach { it.raiseEnergy() }
+            newFlash = collectFlash() - flash
+            flash = flash + newFlash
+        }
+        flash.forEach{ it.energy = 0}
+        totalFlash += flash.size
+        return flash.size
+    }
+
+    private fun collectFlash() = points.entries
+        .filter { it.value > 9 }
+        .map { it.key }.toSet()
+
+    fun Point.raiseEnergy() {
+        this.energy = this.energy +1
     }
 
 }
